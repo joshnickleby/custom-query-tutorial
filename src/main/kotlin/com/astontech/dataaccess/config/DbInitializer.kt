@@ -37,7 +37,15 @@ class DbInitializer(private val WhyRepo: WhyRepo, private val dataAccessor: Data
 
     val query = Why.query()
         .name
-        .testnum.bigDecimal.checkFlag.id.longnum.localDate.zoneDate
+        .testnum
+        .bigDecimal
+        .checkFlag
+        .id
+        .longnum
+        .localDate
+        .zoneDate
+          .where()
+            .name.equals("a").build()
 
     val whys = this.dataAccessor.get(query) {Why()}
 

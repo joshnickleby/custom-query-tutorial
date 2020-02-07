@@ -22,12 +22,16 @@ abstract class QueryBuilder<T>(var tableName: String, var supplier: (query: Stri
 
   val queryColumns = HashSet<String>()
 
+  var whereClauses = HashSet<String>()
+
   var joinInfo = ""
 
   fun build(): String {
     val columns = queryColumns.joinToString(", ") { "$tableName.$it" }
 
-    return "select $columns from $tableName $tableName"
+    val where = if (whereClauses.isNotEmpty()) "where " + whereClauses.joinToString(" ") { "$tableName.$it" } else ""
+
+    return "select $columns from $tableName $tableName $where"
   }
 
 
@@ -50,17 +54,21 @@ abstract class QueryBuilder<T>(var tableName: String, var supplier: (query: Stri
   fun add(propName: String) {
     this.queryColumns.add(propName)
   }
+}
 
-  /**
-   *  Called by the sub class, adds the SQL column name and the Result Set getter to the map.
-   *
-   */
-  @SuppressWarnings("UNCHECKED_CAST")
-  fun addToSet(name: String, nameMapperFn: (T, ResultSet) -> T) {
-    val meta = QueryMeta<T>()
-        .columnName(name)
-        .mapperFn(nameMapperFn)
 
-    this.querySet.add(meta)
+class WhereSet(val preposition: String, val condition: String, val assertion: String)
+
+abstract class WhereClause<T, U: QueryBuilder<T>>(val query: U) {
+  val statementArguments = HashSet<WhereSet>()
+
+  var tempColumn: String = ""
+
+  fun build(): U {
+    query.whereClauses = statementArguments.map {
+      "${it.preposition} ${it.condition} ${it.assertion}"
+    }.toHashSet()
+
+    return query
   }
 }

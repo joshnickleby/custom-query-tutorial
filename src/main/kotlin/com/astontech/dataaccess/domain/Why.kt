@@ -2,6 +2,8 @@ package com.astontech.dataaccess.domain
 
 import com.astontech.dataaccess.common.QueryBuilder
 import com.astontech.dataaccess.common.ReadWriteDelegate
+import com.astontech.dataaccess.common.WhereClause
+import com.astontech.dataaccess.common.WhereSet
 import com.astontech.dataaccess.common.extensions.fromString
 import com.astontech.dataaccess.common.extensions.self
 import com.astontech.dataaccess.common.extensions.toZonedDateTime
@@ -37,14 +39,14 @@ class Why(
 
   override fun setByResult(prop: String, rs: ResultSet) {
     when (prop) {
-      "name" -> name = rs.getString(prop)
-      "testnum" -> testnum = rs.getInt(prop)
-      "longnum" -> longnum = rs.getLong(prop)
+      "name"        -> name = rs.getString(prop)
+      "testnum"     -> testnum = rs.getInt(prop)
+      "longnum"     -> longnum = rs.getLong(prop)
       "big_decimal" -> bigDecimal = rs.getBigDecimal(prop)
-      "check_flag" -> checkFlag = rs.getBoolean(prop)
-      "local_date" -> localDate = LocalDate.now().fromString(rs.getString(prop))
-      "zone_date" -> zoneDate = LocalDateTime.now().fromString(rs.getString(prop)).toZonedDateTime()
-      else -> id = rs.getInt(prop)
+      "check_flag"  -> checkFlag = rs.getBoolean(prop)
+      "local_date"  -> localDate = LocalDate.now().fromString(rs.getString(prop))
+      "zone_date"   -> zoneDate = LocalDateTime.now().fromString(rs.getString(prop)).toZonedDateTime()
+      else          -> id = rs.getInt(prop)
     }
   }
 
@@ -60,31 +62,24 @@ class Why(
 }
 
 class WhyQuery : QueryBuilder<Why>("why", {Why()}) {
-  val name       get(): WhyQuery = self { add("name") }
-  val testnum    get(): WhyQuery = self { add("testnum") }
-  val longnum    get(): WhyQuery = self { add("longnum") }
+  val name       get(): WhyQuery = self { add("name")        }
+  val testnum    get(): WhyQuery = self { add("testnum")     }
+  val longnum    get(): WhyQuery = self { add("longnum")     }
   val bigDecimal get(): WhyQuery = self { add("big_decimal") }
-  val checkFlag  get(): WhyQuery = self { add("check_flag") }
-  val localDate  get(): WhyQuery = self { add("local_date") }
-  val zoneDate   get(): WhyQuery = self { add("zone_date") }
-  val id         get(): WhyQuery = self { add("id") }
+  val checkFlag  get(): WhyQuery = self { add("check_flag")  }
+  val localDate  get(): WhyQuery = self { add("local_date")  }
+  val zoneDate   get(): WhyQuery = self { add("zone_date")   }
+  val id         get(): WhyQuery = self { add("id")          }
+
+  fun where(): WhyWhereClause = WhyWhereClause(this)
 }
 
-//@SuppressWarnings("UNCHECKED_CAST")
-//class DatabaseDelegate<U, in R, T>(val builder: QueryBuilder<T>, val mapper: (String) -> ((T, ResultSet) -> T)) :
-//    ReadOnlyProperty<R, U>  {
-//  override operator fun getValue(thisRef: R, property: KProperty<*>): U {
-//    builder.addToSet(property.name, mapper)
-//    builder.queryColumns.add(property.name)
-//    return builder as U
-//  }
-//}
+class WhyWhereClause(query: WhyQuery) : WhereClause<Why, WhyQuery>(query) {
+  val name  get(): WhyWhereClause = self { tempColumn = "name" }
+  val testnum get(): WhyWhereClause = self { tempColumn = "testnum" }
+  val id get(): WhyWhereClause = self { tempColumn = "id" }
 
-@SuppressWarnings("UNCHECKED_CAST")
-class DatabaseDelegate<U, in R, T>(val builder: QueryBuilder<T>) :
-    ReadOnlyProperty<R, U>  {
-  override operator fun getValue(thisRef: R, property: KProperty<*>): U {
-    builder.queryColumns.add(property.name)
-    return builder as U
+  fun equals(value: String): WhyWhereClause = self {
+    statementArguments.add(WhereSet(tempColumn, "=", "'$value'"))
   }
 }
