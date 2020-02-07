@@ -1,6 +1,8 @@
 package com.astontech.dataaccess.config
 
+import com.astontech.dataaccess.dataAccess.DataAccessor
 import com.astontech.dataaccess.domain.Why
+import com.astontech.dataaccess.domain.WhyQuery
 import com.astontech.dataaccess.repos.WhyRepo
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
@@ -10,7 +12,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Component
-class DbInitializer(private val WhyRepo: WhyRepo) : ApplicationListener<ContextRefreshedEvent> {
+class DbInitializer(private val WhyRepo: WhyRepo, private val dataAccessor: DataAccessor) : ApplicationListener<ContextRefreshedEvent> {
 
   override fun onApplicationEvent(p0: ContextRefreshedEvent) {
     val listOfWhys = listOf(
@@ -30,7 +32,15 @@ class DbInitializer(private val WhyRepo: WhyRepo) : ApplicationListener<ContextR
     WhyRepo.saveAll(listOfWhys)
 
     WhyRepo.findAll().forEach {
-      println(it)
+//      println(it)
     }
+
+    val query = Why.query()
+        .name
+        .testnum.bigDecimal.checkFlag.id.longnum.localDate.zoneDate
+
+    val whys = this.dataAccessor.get(query) {Why()}
+
+    whys?.forEach { println(it) }
   }
 }
