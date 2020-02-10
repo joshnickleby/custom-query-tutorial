@@ -61,7 +61,7 @@ class Why(
   }
 }
 
-class WhyQuery : QueryBuilder<Why>("why", {Why()}) {
+class WhyQuery : QueryBuilder<Why, WhyQuery>("why", {Why()}) {
   val name       get(): WhyQuery = self { add("name")        }
   val testnum    get(): WhyQuery = self { add("testnum")     }
   val longnum    get(): WhyQuery = self { add("longnum")     }
@@ -81,5 +81,9 @@ class WhyWhereClause(query: WhyQuery) : WhereClause<Why, WhyQuery>(query) {
 
   fun equals(value: String): WhyWhereClause = self {
     statementArguments.add(WhereSet(tempColumn, "=", "'$value'"))
+  }
+
+  fun greaterThan(value: String): WhyWhereClause = self {
+    statementArguments.add(WhereSet(tempColumn, "<", "'$value'"))
   }
 }

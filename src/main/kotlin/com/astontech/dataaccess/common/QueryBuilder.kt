@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
  *
  *  ChildQueryBuilder : QueryBuilder<Object> ("object", { Object(it) })
  */
-abstract class QueryBuilder<T>(var tableName: String, var supplier: (query: String) -> T) {
+abstract class QueryBuilder<T, U>(var tableName: String, var supplier: (query: String) -> T) {
 
   /** Stores the query prop name and the getter function passed down */
   protected val querySet = HashSet<QueryMeta<T>>()
@@ -26,12 +26,24 @@ abstract class QueryBuilder<T>(var tableName: String, var supplier: (query: Stri
 
   var joinInfo = ""
 
+  var order: String = ""
+
+  var hasOrder: Boolean = false
+
+  var ascending: Boolean = true
+
   fun build(): String {
     val columns = queryColumns.joinToString(", ") { "$tableName.$it" }
 
     val where = if (whereClauses.isNotEmpty()) "where " + whereClauses.joinToString(" ") { "$tableName.$it" } else ""
 
-    return "select $columns from $tableName $tableName $where"
+    val order = if (order != "") {
+      val direction = if (ascending) "asc" else "desc"
+
+      "order by $tableName.$order $direction"
+    } else ""
+
+    return "select $columns from $tableName $tableName $where $order"
   }
 
 
@@ -52,14 +64,54 @@ abstract class QueryBuilder<T>(var tableName: String, var supplier: (query: Stri
       .toZonedDateTime()
 
   fun add(propName: String) {
-    this.queryColumns.add(propName)
+    if (this.hasOrder) {
+      this.order = propName
+      this.hasOrder = false
+    } else {
+      this.queryColumns.add(propName)
+    }
+  }
+
+  @SuppressWarnings("UNCHECKED_CAST")
+  fun orderBy(): U {
+    this.hasOrder = true
+
+    return this as U
+  }
+
+  @SuppressWarnings("UNCHECKED_CAST")
+  fun desc(): U {
+    this.ascending = false
+
+    return this as U
   }
 }
 
 
 class WhereSet(val preposition: String, val condition: String, val assertion: String)
 
-abstract class WhereClause<T, U: QueryBuilder<T>>(val query: U) {
+/**
+ *  Extended by a specific where clause. T refers to the database object
+ *  and U refers to the class extending QueryBuilder.
+ *
+ *  Pass in the query builder extended class so that it gets returned on build.
+ *  This allows for multiple where clauses.
+ *
+ *  eg.
+ *    val query = Why.query()
+ *                      .name
+ *                      .testnum
+ *                      .bigDecimal
+ *                      .checkFlag
+ *                      .id
+ *                      .longnum
+ *                      .localDate
+ *                      .zoneDate
+ *                        .where()
+ *                          .name.equals("a")   // defined in extended class
+ *                        .build()
+ */
+abstract class WhereClause<T, U: QueryBuilder<T, U>>(val query: U) {
   val statementArguments = HashSet<WhereSet>()
 
   var tempColumn: String = ""

@@ -10,11 +10,11 @@ import java.sql.ResultSet
 @Component
 class DataAccessor(private val jdbcTemplate: JdbcTemplate) {
 
-  fun <T : DataTable> get(queryBuilder: QueryBuilder<T>, blankEntitySp: () -> T): List<T>? =
+  fun <T : DataTable, U> get(queryBuilder: QueryBuilder<T, U>, blankEntitySp: () -> T): List<T>? =
     jdbcTemplate.query(queryBuilder.build(), TestMapper(queryBuilder, blankEntitySp)).toList()
 }
 
-class TestMapper<T : DataTable>(private val queryBuilder: QueryBuilder<T>, private val blankEntitySp: () -> T) : RowMapper<T> {
+class TestMapper<T : DataTable, U>(private val queryBuilder: QueryBuilder<T, U>, private val blankEntitySp: () -> T) : RowMapper<T> {
   override fun mapRow(rs: ResultSet, p1: Int): T? {
     val obj = blankEntitySp()
 
