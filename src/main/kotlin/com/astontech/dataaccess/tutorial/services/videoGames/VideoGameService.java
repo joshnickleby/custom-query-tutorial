@@ -1,6 +1,4 @@
-package com.astontech.dataaccess.services.videoGames;
-
-import com.astontech.dataaccess.domain.VideoGame;
+package com.astontech.dataaccess.tutorial.services.videoGames;
 
 public interface VideoGameService {
 
