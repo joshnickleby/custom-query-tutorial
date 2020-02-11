@@ -75,9 +75,9 @@ class WhyQuery : QueryBuilder<Why, WhyQuery>("why", {Why()}) {
 }
 
 class WhyWhereClause(query: WhyQuery) : WhereClause<Why, WhyQuery>(query) {
-  val name  get(): WhyWhereClause = self { tempColumn = "name" }
-  val testnum get(): WhyWhereClause = self { tempColumn = "testnum" }
-  val id get(): WhyWhereClause = self { tempColumn = "id" }
+  val name  get(): WhyWhereClause = self { set("name") }
+  val testnum get(): WhyWhereClause = self { set("testnum") }
+  val id get(): WhyWhereClause = self { set("id") }
 
   fun equals(value: String): WhyWhereClause = self {
     statementArguments.add(WhereSet(tempColumn, "=", "'$value'"))

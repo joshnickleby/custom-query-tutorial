@@ -15,10 +15,10 @@ import java.time.ZonedDateTime
  *
  *  ChildQueryBuilder : QueryBuilder<Object> ("object", { Object(it) })
  */
-abstract class QueryBuilder<T, U>(var tableName: String, var supplier: (query: String) -> T) {
+abstract class QueryBuilder<ENTITY, SELF>(var tableName: String, var supplier: (query: String) -> ENTITY) {
 
   /** Stores the query prop name and the getter function passed down */
-  protected val querySet = HashSet<QueryMeta<T>>()
+  protected val querySet = HashSet<QueryMeta<ENTITY>>()
 
   val queryColumns = HashSet<String>()
 
@@ -73,17 +73,17 @@ abstract class QueryBuilder<T, U>(var tableName: String, var supplier: (query: S
   }
 
   @SuppressWarnings("UNCHECKED_CAST")
-  fun orderBy(): U {
+  fun orderBy(): SELF {
     this.hasOrder = true
 
-    return this as U
+    return this as SELF
   }
 
   @SuppressWarnings("UNCHECKED_CAST")
-  fun desc(): U {
+  fun desc(): SELF {
     this.ascending = false
 
-    return this as U
+    return this as SELF
   }
 }
 
@@ -111,16 +111,20 @@ class WhereSet(val preposition: String, val condition: String, val assertion: St
  *                          .name.equals("a")   // defined in extended class
  *                        .build()
  */
-abstract class WhereClause<T, U: QueryBuilder<T, U>>(val query: U) {
+abstract class WhereClause<ENTITY, QUERY : QueryBuilder<ENTITY, QUERY>>(private val query: QUERY) {
   val statementArguments = HashSet<WhereSet>()
 
   var tempColumn: String = ""
 
-  fun build(): U {
+  fun build(): QUERY {
     query.whereClauses = statementArguments.map {
       "${it.preposition} ${it.condition} ${it.assertion}"
     }.toHashSet()
 
     return query
+  }
+
+  fun set(value: String) {
+    tempColumn = value
   }
 }

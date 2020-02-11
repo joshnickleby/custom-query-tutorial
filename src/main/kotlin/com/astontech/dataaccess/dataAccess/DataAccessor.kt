@@ -10,12 +10,13 @@ import java.sql.ResultSet
 @Component
 class DataAccessor(private val jdbcTemplate: JdbcTemplate) {
 
-  fun <T : DataTable, U> get(queryBuilder: QueryBuilder<T, U>, blankEntitySp: () -> T): List<T>? =
-    jdbcTemplate.query(queryBuilder.build(), TestMapper(queryBuilder, blankEntitySp)).toList()
+  fun <ENTITY : DataTable, QUERY> getTopLayer(queryBuilder: QueryBuilder<ENTITY, QUERY>, blankEntitySp: () -> ENTITY): List<ENTITY>? =
+    jdbcTemplate.query(queryBuilder.build(), SingleLayerMapper(queryBuilder, blankEntitySp)).toList()
 }
 
-class TestMapper<T : DataTable, U>(private val queryBuilder: QueryBuilder<T, U>, private val blankEntitySp: () -> T) : RowMapper<T> {
-  override fun mapRow(rs: ResultSet, p1: Int): T? {
+class SingleLayerMapper<ENTITY : DataTable, QUERY>(private val queryBuilder: QueryBuilder<ENTITY, QUERY>,
+                                                   private val blankEntitySp: () -> ENTITY) : RowMapper<ENTITY> {
+  override fun mapRow(rs: ResultSet, p1: Int): ENTITY? {
     val obj = blankEntitySp()
 
     queryBuilder.queryColumns.forEach { obj.setByResult(it, rs) }

@@ -2,7 +2,6 @@ package com.astontech.dataaccess.config
 
 import com.astontech.dataaccess.dataAccess.DataAccessor
 import com.astontech.dataaccess.domain.Why
-import com.astontech.dataaccess.domain.WhyQuery
 import com.astontech.dataaccess.repos.WhyRepo
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
@@ -38,7 +37,6 @@ class DbInitializer(private val WhyRepo: WhyRepo, private val dataAccessor: Data
     val query = Why.query()
         .name
         .testnum
-        .bigDecimal
         .checkFlag
         .id
         .longnum
@@ -46,11 +44,11 @@ class DbInitializer(private val WhyRepo: WhyRepo, private val dataAccessor: Data
         .zoneDate
           .where()
             .testnum.greaterThan("4").build()
-        .orderBy()
-          .name
-            .desc()
+          .orderBy()
+            .name
+              .desc()
 
-    val whys = this.dataAccessor.get(query) {Why()}
+    val whys = this.dataAccessor.getTopLayer(query) {Why()}
 
     whys?.forEach { println(it) }
   }
