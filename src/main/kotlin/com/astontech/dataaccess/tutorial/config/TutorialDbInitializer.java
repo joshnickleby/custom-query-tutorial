@@ -34,6 +34,9 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     checkGetWithName();
     checkGetWithNameCharacter();
     addVideoGameTest();
+    addCharactersToGame("Super Mario 64", "Mario", "Bowser");
+    addCharactersToGame("Legend of Zelda: Majora's Mask", "Link", "Skull Kid", "Navi");
+    addCharactersToGame("Halo: Combat Evolved", "Master Chief", "Cortana");
   }
 
   private void createGames() {
@@ -103,6 +106,7 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     System.out.println("Character By Name");
     System.out.println(skullKid);
   }
+
   private void addVideoGameTest() {
     VideoGame game = videoGameService.getVideoGameByName("Luigi's Mansion 3");
 
@@ -119,5 +123,18 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     System.out.println("Saved the character change " + saved);
 
     System.out.println(gameCharacterService.getCharacterByName("Luigi"));
+  }
+
+  private void addCharactersToGame(String gameName, String ... characterNames) {
+    VideoGame game = videoGameService.getVideoGameByName(gameName);
+
+    System.out.println("Add Characters to Game: " + gameName);
+
+    Stream.of(characterNames)
+        .map(gameCharacterService::getCharacterByName)
+        .forEach(character -> {
+          gameCharacterService.updateVideoGameId(character.id, game.id);
+          System.out.println(gameCharacterService.getCharacterByName(character.name));
+        });
   }
 }
