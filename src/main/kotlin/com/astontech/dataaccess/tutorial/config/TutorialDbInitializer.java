@@ -3,6 +3,7 @@ package com.astontech.dataaccess.tutorial.config;
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacter;
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterService;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGame;
+import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameQuery;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -11,8 +12,12 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class TutorialDbInitializer implements ApplicationListener<ContextRefreshedEvent> {
@@ -31,7 +36,7 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     createCharacters();
     printBreak();
 
-    checkGetWithName();
+    checkGetGameWithName();
     printBreak();
 
     checkGetWithNameCharacter();
@@ -80,6 +85,24 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
         new VideoGame("Divinity: Original Sin 2", 2017, LocalDate.of(2017, 9, 14), new BigDecimal("94.04"), 1034987L, false),
         new VideoGame("Far Cry 4", 2017, LocalDate.of(2017, 11, 18), new BigDecimal(82), 7000000L, false)
     );
+
+    List<VideoGame> loopSaved = games.stream()
+        .map(videoGameService::save)
+        .collect(Collectors.toList());
+
+    Stream<VideoGame> gameStream = new ArrayList<>(loopSaved).stream();
+
+    Stream<VideoGame> parallelStream = new ArrayList<>(loopSaved).parallelStream();
+
+    Consumer<VideoGame> print = System.out::println;
+
+    System.out.println("--------------------- STREAM");
+
+    gameStream.forEach(print);
+
+    System.out.println("--------------------- PARALLEL STREAM");
+
+    parallelStream.forEach(print);
   }
 
   private void createCharacters() {
@@ -87,10 +110,25 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     List<GameCharacter> zelda = Arrays.asList(new GameCharacter("Link"), new GameCharacter("Skull Kid"), new GameCharacter("Navi"));
     List<GameCharacter> halo = Arrays.asList(new GameCharacter("Master Chief"), new GameCharacter("Cortana"));
     List<GameCharacter> luigi = Arrays.asList(new GameCharacter("Luigi"));
+
+    Stream.of(mario, zelda, halo, luigi).forEach(gameCharacterList -> {
+      gameCharacterList.stream()
+          .map(gameCharacterService::save)
+          .forEach(System.out::println);
+    });
   }
 
-  private void checkGetWithName() {
+  private void checkGetGameWithName() {
+    VideoGame mario = videoGameService.getGameByName("Super Mario 64");
 
+    System.out.println("Game by Name");
+    System.out.println(mario);
+
+    System.out.println("Game with Name like Single");
+    videoGameService.getGameWithNameLike("zelda").forEach(System.out::println);
+
+    System.out.println("Game with Name like Multiple");
+    videoGameService.getGameWithNameLike("of").forEach(System.out::println);
   }
 
   private void checkGetWithNameCharacter() {
@@ -98,15 +136,46 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
   }
 
   private void addVideoGameTest() {
+    VideoGame game = videoGameService.getGameByName("Luigi's Mansion 3");
 
+    GameCharacter character = gameCharacterService.getCharacterByName("Luigi");
+
+    System.out.println("Add Character to Game Test");
+
+    System.out.println("Game: " + game.toString());
+
+    System.out.println("Character: " + character.toString());
+
+    Integer saved = gameCharacterService.updateVideoGameId(game.id, character.id);
+
+    System.out.println("Save character " + saved);
+
+    System.out.println(gameCharacterService.getCharacterByName("Luigi"));
   }
 
   private void addCharactersToGame(String gameName, String ... characterNames) {
+    VideoGame game = videoGameService.getGameByName(gameName);
 
+    System.out.println("Add character to game: " + gameName);
+
+    Stream.of(characterNames)
+        .map(gameCharacterService::getCharacterByName)
+        .forEach(character -> {
+          gameCharacterService.updateVideoGameId(game.id, character.id);
+          System.out.println(gameCharacterService.getCharacterByName(character.name));
+        });
   }
 
   private void getVideoGameProjected(String name) {
+    System.out.println("Get Video Game");
 
+    VideoGameQuery query = videoGameService.getGameProjectedByName(name);
+
+    System.out.println("id: " + query.getId() + " date: " + query.getRelease_date());
+
+    VideoGame game = new VideoGame(query);
+
+    System.out.println(game);
   }
 
   private void getNestedVideoGameProjected(String name) {
