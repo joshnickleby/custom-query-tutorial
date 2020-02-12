@@ -23,9 +23,6 @@ public class VideoGame {
   public Boolean emulated = false;
   public Long unitsSold;
 
-  @Transient
-  public List<GameCharacter> characters = new ArrayList<>();
-
   public VideoGame() {}
 
   public VideoGame(String name) {
@@ -47,48 +44,6 @@ public class VideoGame {
     this.emulated = emulated;
     this.releaseDate = releaseDate;
   }
-
-  public VideoGame(VideoGameQuery query) {
-    this.setItems(query);
-  }
-
-  public VideoGame(List<VideoGameNestedQuery> queries) {
-    if (queries.size() > 0) {
-      this.setItems(queries.get(0));
-
-      characters = queries.stream().map(GameCharacter::new).collect(Collectors.toList());
-    }
-  }
-
-  private void setItems(VideoGameQuery query) {
-    this.id = query.getId();
-    this.name = query.getName();
-    this.year = query.getYear();
-    this.releaseDate = query.getRelease_date();
-    this.averageRating = query.getAverage_rating();
-
-    String dateString = query.getCreated_on();
-
-    String[] dateTimeParts = dateString.split(" ");
-
-    String[] dateParts = dateTimeParts[0].split("-");
-
-    String[] timeParts = dateTimeParts[1].split("\\.")[0].split(":");
-
-    LocalDate date = LocalDate.of(
-        Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
-
-    LocalTime time = LocalTime.of(Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]), Integer.parseInt(timeParts[2]));
-
-    LocalDateTime dateTime = LocalDateTime.of(date, time);
-
-    this.createdOn = ZonedDateTime.of(dateTime, ZoneId.of("America/Chicago"));
-
-    this.emulated = query.getEmulated();
-
-    this.unitsSold = query.getUnits_sold();
-  }
-
 
   @Override
   public String toString() {
