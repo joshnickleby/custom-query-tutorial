@@ -32,6 +32,8 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     createGames();
     createCharacters();
     checkGetWithName();
+    checkGetWithNameCharacter();
+    addVideoGameTest();
   }
 
   private void createGames() {
@@ -71,10 +73,11 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     List<GameCharacter> mario = Arrays.asList(new GameCharacter("Mario"), new GameCharacter("Bowser"));
     List<GameCharacter> zelda = Arrays.asList(new GameCharacter("Link"), new GameCharacter("Skull Kid"), new GameCharacter("Navi"));
     List<GameCharacter> halo = Arrays.asList(new GameCharacter("Master Chief"), new GameCharacter("Cortana"));
+    List<GameCharacter> luigi = Arrays.asList(new GameCharacter("Luigi"));
 
     Consumer<GameCharacter> print = System.out::println;
 
-    Stream.of(mario, zelda, halo).forEach(charList -> {
+    Stream.of(mario, zelda, halo, luigi).forEach(charList -> {
       charList.stream()
           .map(gameCharacterService::save)
           .forEach(print);
@@ -84,13 +87,37 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
   private void checkGetWithName() {
     VideoGame mario = videoGameService.getVideoGameByName("Super Mario 64");
 
-    System.out.println("By Name");
+    System.out.println("Game By Name");
     System.out.println(mario);
 
-    System.out.println("Like Name Single");
+    System.out.println("Game With Name Like Single");
     videoGameService.getVideoGameWithNameLike("zelda").forEach(System.out::println);
 
-    System.out.println("Like Name Multiple");
+    System.out.println("Like With Name Like Multiple");
     videoGameService.getVideoGameWithNameLike("of").forEach(System.out::println);
+  }
+
+  private void checkGetWithNameCharacter() {
+    GameCharacter skullKid = gameCharacterService.getCharacterByName("Skull Kid");
+
+    System.out.println("Character By Name");
+    System.out.println(skullKid);
+  }
+  private void addVideoGameTest() {
+    VideoGame game = videoGameService.getVideoGameByName("Luigi's Mansion 3");
+
+    GameCharacter character = gameCharacterService.getCharacterByName("Luigi");
+
+    System.out.println("Add Character to Game Test");
+
+    System.out.println("Game: " + game.toString());
+
+    System.out.println("Character: " + character.toString());
+
+    Integer saved = gameCharacterService.updateVideoGameId(character.id, game.id);
+
+    System.out.println("Saved the character change " + saved);
+
+    System.out.println(gameCharacterService.getCharacterByName("Luigi"));
   }
 }

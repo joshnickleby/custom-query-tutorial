@@ -7,4 +7,8 @@ public interface GameCharacterService {
   default GameCharacter save(GameCharacterRepository repo, GameCharacter character) {
     return repo.save(character);
   }
+
+  GameCharacter getCharacterByName(String name);
+
+  Integer updateVideoGameId(Integer characterId, Integer videoGameId);
 }

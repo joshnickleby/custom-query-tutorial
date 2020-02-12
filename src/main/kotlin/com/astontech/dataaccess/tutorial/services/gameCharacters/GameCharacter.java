@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class GameCharacter {
@@ -23,6 +24,10 @@ public class GameCharacter {
 
   @Override
   public String toString() {
-    return String.join(", ", "id: " + id, "name: " + name);
+    return String.join(", ",
+        "id: " + id,
+        "name: " + name,
+        "videoGameId: " + (Objects.isNull(videoGameId) ? "null" : videoGameId)
+    );
   }
 }
