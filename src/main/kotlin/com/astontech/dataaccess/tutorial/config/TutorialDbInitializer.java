@@ -1,7 +1,6 @@
 package com.astontech.dataaccess.tutorial.config;
 
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacter;
-import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterQuery;
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterService;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGame;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameNestedQuery;
@@ -34,7 +33,7 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     createGames();
     printBreak();
-    
+
     createCharacters();
     printBreak();
 
@@ -60,10 +59,13 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     printBreak();
 
     getNestedVideoGameProjected("Legend of Zelda: Majora's Mask");
+    printBreak();
+
+    getBrokenApart("Halo: Combat Evolved");
   }
 
   public void printBreak() {
-    System.out.println("=========================================");
+    System.out.println("=========================================\n");
   }
 
   private void createGames() {
@@ -171,7 +173,7 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
 
     VideoGame game = new VideoGame(query);
 
-    System.out.println("id: " + query.getGameId() + " date: " + query.getRelease_date());
+    System.out.println("id: " + query.getId() + " date: " + query.getRelease_date());
     System.out.println(game);
   }
 
@@ -180,12 +182,25 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     List<VideoGameNestedQuery> gameQueries = videoGameService.getVideoGameAndNestedByName(name);
 
     gameQueries.forEach(query -> {
-      System.out.println(query.getGameName() + " - " + query.getCharacterName());
+      System.out.println(query.getName() + " - " + query.getCharacterName());
     });
 
     VideoGame game = new VideoGame(gameQueries);
 
     System.out.println("Constructor based");
+    System.out.println(game);
+    game.characters.forEach(System.out::println);
+  }
+
+  private void getBrokenApart(String name) {
+    System.out.println("Get Video Game Broken Apart");
+    VideoGame game = new VideoGame(videoGameService.getGameProjectedByName(name));
+
+    game.characters = gameCharacterService.getCharacterProjectionByVideoGameId(game.id)
+        .stream()
+        .map(GameCharacter::new)
+        .collect(Collectors.toList());
+
     System.out.println(game);
     game.characters.forEach(System.out::println);
   }

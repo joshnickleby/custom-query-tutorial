@@ -25,8 +25,8 @@ public class GameCharacter {
   }
 
   public GameCharacter(GameCharacterQuery query) {
-    this.id = query.getCharacterId();
-    this.name = query.getCharacterName();
+    this.id = query.getId();
+    this.name = query.getName();
   }
 
   public GameCharacter(VideoGameNestedQuery query) {

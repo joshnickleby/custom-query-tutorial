@@ -15,8 +15,8 @@ public interface VideoGameRepository extends CrudRepository<VideoGame, Integer> 
 
   @Query(value =
       "select " +
-          "game.id as gameId, " +
-          "game.name as gameName, " +
+          "game.id, " +
+          "game.name, " +
           "game.year, " +
           "game.release_date, " +
           "game.average_rating, " +
@@ -28,8 +28,8 @@ public interface VideoGameRepository extends CrudRepository<VideoGame, Integer> 
 
   @Query(value =
       "select " +
-          "game.id as gameId, " +
-          "game.name as gameName, " +
+          "game.id, " +
+          "game.name, " +
           "game.year, " +
           "game.release_date, " +
           "game.average_rating, " +

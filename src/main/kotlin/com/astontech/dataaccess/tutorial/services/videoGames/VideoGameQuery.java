@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface VideoGameQuery {
-  Integer getGameId();
+  Integer getId();
 
-  String getGameName();
+  String getName();
 
   BigDecimal getAverage_rating();
 

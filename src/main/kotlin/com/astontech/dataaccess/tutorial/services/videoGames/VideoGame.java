@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -62,8 +61,8 @@ public class VideoGame {
   }
 
   private void setItems(VideoGameQuery query) {
-    this.id = query.getGameId();
-    this.name = query.getGameName();
+    this.id = query.getId();
+    this.name = query.getName();
     this.year = query.getYear();
     this.releaseDate = query.getRelease_date();
     this.averageRating = query.getAverage_rating();
