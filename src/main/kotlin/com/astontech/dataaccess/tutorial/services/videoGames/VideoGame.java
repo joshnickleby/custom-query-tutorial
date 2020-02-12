@@ -17,7 +17,7 @@ public class VideoGame {
   public ZonedDateTime createdOn;
   public Boolean emulated = false;
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
   public String name;
   public LocalDate releaseDate;

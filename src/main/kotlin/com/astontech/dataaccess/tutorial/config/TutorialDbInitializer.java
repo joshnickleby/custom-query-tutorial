@@ -1,5 +1,7 @@
 package com.astontech.dataaccess.tutorial.config;
 
+import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacter;
+import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterService;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGame;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,16 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
   @Autowired
   private VideoGameService videoGameService;
 
+  @Autowired
+  private GameCharacterService gameCharacterService;
+
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+    createGames();
+    createCharacters();
+  }
+
+  private void createGames() {
     List<VideoGame> games = Arrays.asList(
         new VideoGame("Super Mario 64", 1996, LocalDate.of(1996, 6, 23), new BigDecimal("96.41"), 12000000L, true),
         new VideoGame("Legend of Zelda: Majora's Mask", 2000, LocalDate.of(2000, 4, 27), new BigDecimal("94.87"), 3360000L, true),
@@ -55,4 +65,20 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
 
     gameParallelStream.forEach(print);
   }
+
+  private void createCharacters() {
+    List<GameCharacter> mario = Arrays.asList(new GameCharacter("Mario"), new GameCharacter("Bowser"));
+    List<GameCharacter> zelda = Arrays.asList(new GameCharacter("Link"), new GameCharacter("Skull Kid"), new GameCharacter("Navi"));
+    List<GameCharacter> halo = Arrays.asList(new GameCharacter("Master Chief"), new GameCharacter("Cortana"));
+
+    Consumer<GameCharacter> print = System.out::println;
+
+    Stream.of(mario, zelda, halo).forEach(charList -> {
+      charList.stream()
+          .map(gameCharacterService::save)
+          .forEach(print);
+    });
+  }
+
+  private void addCharacterToGame() {}
 }
