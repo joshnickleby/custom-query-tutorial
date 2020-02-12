@@ -5,26 +5,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Objects;
 
 @Entity
 public class VideoGame {
-  public BigDecimal averageRating = BigDecimal.ZERO;
-  public ZonedDateTime createdOn;
-  public Boolean emulated = false;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
   public String name;
-  public LocalDate releaseDate;
-  public Long unitsSold;
   public Integer year;
+  public LocalDate releaseDate;
+  public BigDecimal averageRating = BigDecimal.ZERO;
+  public ZonedDateTime createdOn;
+  public Boolean emulated = false;
+  public Long unitsSold;
 
   public VideoGame() {}
+
+  public VideoGame(String name) {
+    this.name = name;
+    this.createdOn = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Chicago"));
+  }
 
   public VideoGame(String name,
                    Integer year,
@@ -41,9 +43,33 @@ public class VideoGame {
     this.releaseDate = releaseDate;
   }
 
-  public VideoGame(String name) {
-    this.name = name;
-    this.createdOn = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Chicago"));
+  public VideoGame(VideoGameQuery query) {
+    this.id = query.getId();
+    this.name = query.getName();
+    this.year = query.getYear();
+    this.releaseDate = query.getRelease_date();
+    this.averageRating = query.getAverage_rating();
+
+    String dateString = query.getCreated_on();
+
+    String[] dateTimeParts = dateString.split(" ");
+
+    String[] dateParts = dateTimeParts[0].split("-");
+
+    String[] timeParts = dateTimeParts[1].split("\\.")[0].split(":");
+
+    LocalDate date = LocalDate.of(
+        Integer.parseInt(dateParts[0]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[2]));
+
+    LocalTime time = LocalTime.of(Integer.parseInt(timeParts[0]), Integer.parseInt(timeParts[1]), Integer.parseInt(timeParts[2]));
+
+    LocalDateTime dateTime = LocalDateTime.of(date, time);
+
+    this.createdOn = ZonedDateTime.of(dateTime, ZoneId.of("America/Chicago"));
+
+    this.emulated = query.getEmulated();
+
+    this.unitsSold = query.getUnits_sold();
   }
 
   @Override

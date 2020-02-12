@@ -29,4 +29,9 @@ public class VideoGameServiceImpl implements VideoGameService {
   public List<VideoGame> getVideoGameWithNameLike(String name) {
     return videoGameRepository.getGameWithNameLike(name);
   }
+
+  @Override
+  public VideoGameQuery getVideoGameAndNestedByName(String name) {
+    return videoGameRepository.getVideoGameAndNestedByName(name);
+  }
 }

@@ -3,6 +3,7 @@ package com.astontech.dataaccess.tutorial.config;
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacter;
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterService;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGame;
+import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameQuery;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -37,6 +38,8 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     addCharactersToGame("Super Mario 64", "Mario", "Bowser");
     addCharactersToGame("Legend of Zelda: Majora's Mask", "Link", "Skull Kid", "Navi");
     addCharactersToGame("Halo: Combat Evolved", "Master Chief", "Cortana");
+
+    getVideoGame("Super Mario 64");
   }
 
   private void createGames() {
@@ -136,5 +139,15 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
           gameCharacterService.updateVideoGameId(character.id, game.id);
           System.out.println(gameCharacterService.getCharacterByName(character.name));
         });
+  }
+
+  private void getVideoGame(String name) {
+    System.out.println("Get Video Game");
+    VideoGameQuery query = videoGameService.getVideoGameAndNestedByName(name);
+
+    VideoGame game = new VideoGame(query);
+
+    System.out.println("id: " + query.getId() + " date: " + query.getRelease_date());
+    System.out.println(game);
   }
 }

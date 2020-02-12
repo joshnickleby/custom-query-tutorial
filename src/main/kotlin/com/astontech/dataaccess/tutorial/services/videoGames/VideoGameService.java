@@ -13,4 +13,6 @@ public interface VideoGameService {
   VideoGame getVideoGameByName(String name);
 
   List<VideoGame> getVideoGameWithNameLike(String name);
+
+  VideoGameQuery getVideoGameAndNestedByName(String name);
 }

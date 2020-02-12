@@ -22,6 +22,11 @@ public class GameCharacter {
     this.name = name;
   }
 
+  public GameCharacter(GameCharacterQuery query) {
+    this.id = query.getId();
+    this.name = query.getName();
+  }
+
   @Override
   public String toString() {
     return String.join(", ",
