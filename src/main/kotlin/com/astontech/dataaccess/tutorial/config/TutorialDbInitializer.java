@@ -31,6 +31,7 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     createGames();
     createCharacters();
+    checkGetWithName();
   }
 
   private void createGames() {
@@ -80,5 +81,16 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     });
   }
 
-  private void addCharacterToGame() {}
+  private void checkGetWithName() {
+    VideoGame mario = videoGameService.getVideoGameByName("Super Mario 64");
+
+    System.out.println("By Name");
+    System.out.println(mario);
+
+    System.out.println("Like Name Single");
+    videoGameService.getVideoGameWithNameLike("zelda").forEach(System.out::println);
+
+    System.out.println("Like Name Multiple");
+    videoGameService.getVideoGameWithNameLike("of").forEach(System.out::println);
+  }
 }

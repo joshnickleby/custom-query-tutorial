@@ -24,6 +24,7 @@ public class VideoGame {
   public Long unitsSold;
   public Integer year;
 
+  public VideoGame() {}
 
   public VideoGame(String name,
                    Integer year,

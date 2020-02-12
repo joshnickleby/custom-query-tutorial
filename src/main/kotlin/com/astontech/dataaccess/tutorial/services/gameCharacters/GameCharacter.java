@@ -15,6 +15,8 @@ public class GameCharacter {
 
   public Integer videoGameId;
 
+  public GameCharacter() {}
+
   public GameCharacter(String name) {
     this.name = name;
   }
