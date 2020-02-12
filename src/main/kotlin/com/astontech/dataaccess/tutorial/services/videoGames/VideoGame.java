@@ -1,12 +1,15 @@
 package com.astontech.dataaccess.tutorial.services.videoGames;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacter;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class VideoGame {
@@ -20,6 +23,9 @@ public class VideoGame {
   public ZonedDateTime createdOn;
   public Boolean emulated = false;
   public Long unitsSold;
+
+  @Transient
+  public List<GameCharacter> characters = new ArrayList<>();
 
   public VideoGame() {}
 
@@ -44,8 +50,20 @@ public class VideoGame {
   }
 
   public VideoGame(VideoGameQuery query) {
-    this.id = query.getId();
-    this.name = query.getName();
+    this.setItems(query);
+  }
+
+  public VideoGame(List<VideoGameNestedQuery> queries) {
+    if (queries.size() > 0) {
+      this.setItems(queries.get(0));
+
+      characters = queries.stream().map(GameCharacter::new).collect(Collectors.toList());
+    }
+  }
+
+  private void setItems(VideoGameQuery query) {
+    this.id = query.getGameId();
+    this.name = query.getGameName();
     this.year = query.getYear();
     this.releaseDate = query.getRelease_date();
     this.averageRating = query.getAverage_rating();
@@ -71,6 +89,7 @@ public class VideoGame {
 
     this.unitsSold = query.getUnits_sold();
   }
+
 
   @Override
   public String toString() {

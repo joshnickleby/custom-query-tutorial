@@ -15,8 +15,8 @@ public interface VideoGameRepository extends CrudRepository<VideoGame, Integer> 
 
   @Query(value =
       "select " +
-          "game.id, " +
-          "game.name, " +
+          "game.id as gameId, " +
+          "game.name as gameName, " +
           "game.year, " +
           "game.release_date, " +
           "game.average_rating, " +
@@ -24,5 +24,22 @@ public interface VideoGameRepository extends CrudRepository<VideoGame, Integer> 
           "game.emulated, " +
           "game.units_sold " +
       "from video_game game where game.name = ?1", nativeQuery = true)
-  VideoGameQuery getVideoGameAndNestedByName(String name);
+  VideoGameQuery getGameProjectedByName(String name);
+
+  @Query(value =
+      "select " +
+          "game.id as gameId, " +
+          "game.name as gameName, " +
+          "game.year, " +
+          "game.release_date, " +
+          "game.average_rating, " +
+          "game.created_on, " +
+          "game.emulated, " +
+          "game.units_sold, " +
+          "gc.id as characterId, " +
+          "gc.name as characterName " +
+      "from video_game game " +
+      "inner join game_character gc on gc.video_game_id = game.id " +
+      "where game.name = ?1", nativeQuery = true)
+  List<VideoGameNestedQuery> getGameProjectedNestedByName(String name);
 }

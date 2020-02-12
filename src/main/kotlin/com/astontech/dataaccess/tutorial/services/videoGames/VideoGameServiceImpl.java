@@ -31,7 +31,12 @@ public class VideoGameServiceImpl implements VideoGameService {
   }
 
   @Override
-  public VideoGameQuery getVideoGameAndNestedByName(String name) {
-    return videoGameRepository.getVideoGameAndNestedByName(name);
+  public VideoGameQuery getGameProjectedByName(String name) {
+    return videoGameRepository.getGameProjectedByName(name);
+  }
+
+  @Override
+  public List<VideoGameNestedQuery> getVideoGameAndNestedByName(String name) {
+    return videoGameRepository.getGameProjectedNestedByName(name);
   }
 }

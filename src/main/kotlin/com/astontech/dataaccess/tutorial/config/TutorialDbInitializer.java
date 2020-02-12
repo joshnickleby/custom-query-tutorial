@@ -1,8 +1,10 @@
 package com.astontech.dataaccess.tutorial.config;
 
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacter;
+import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterQuery;
 import com.astontech.dataaccess.tutorial.services.gameCharacters.GameCharacterService;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGame;
+import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameNestedQuery;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameQuery;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +33,37 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     createGames();
+    printBreak();
+    
     createCharacters();
-    checkGetWithName();
-    checkGetWithNameCharacter();
-    addVideoGameTest();
-    addCharactersToGame("Super Mario 64", "Mario", "Bowser");
-    addCharactersToGame("Legend of Zelda: Majora's Mask", "Link", "Skull Kid", "Navi");
-    addCharactersToGame("Halo: Combat Evolved", "Master Chief", "Cortana");
+    printBreak();
 
-    getVideoGame("Super Mario 64");
+    checkGetWithName();
+    printBreak();
+
+    checkGetWithNameCharacter();
+    printBreak();
+
+    addVideoGameTest();
+    printBreak();
+
+    addCharactersToGame("Super Mario 64", "Mario", "Bowser");
+    printBreak();
+
+    addCharactersToGame("Legend of Zelda: Majora's Mask", "Link", "Skull Kid", "Navi");
+    printBreak();
+
+    addCharactersToGame("Halo: Combat Evolved", "Master Chief", "Cortana");
+    printBreak();
+
+    getVideoGameProjected("Super Mario 64");
+    printBreak();
+
+    getNestedVideoGameProjected("Legend of Zelda: Majora's Mask");
+  }
+
+  public void printBreak() {
+    System.out.println("=========================================");
   }
 
   private void createGames() {
@@ -141,13 +165,28 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
         });
   }
 
-  private void getVideoGame(String name) {
+  private void getVideoGameProjected(String name) {
     System.out.println("Get Video Game");
-    VideoGameQuery query = videoGameService.getVideoGameAndNestedByName(name);
+    VideoGameQuery query = videoGameService.getGameProjectedByName(name);
 
     VideoGame game = new VideoGame(query);
 
-    System.out.println("id: " + query.getId() + " date: " + query.getRelease_date());
+    System.out.println("id: " + query.getGameId() + " date: " + query.getRelease_date());
     System.out.println(game);
+  }
+
+  private void getNestedVideoGameProjected(String name) {
+    System.out.println("Get Nested Video Game");
+    List<VideoGameNestedQuery> gameQueries = videoGameService.getVideoGameAndNestedByName(name);
+
+    gameQueries.forEach(query -> {
+      System.out.println(query.getGameName() + " - " + query.getCharacterName());
+    });
+
+    VideoGame game = new VideoGame(gameQueries);
+
+    System.out.println("Constructor based");
+    System.out.println(game);
+    game.characters.forEach(System.out::println);
   }
 }
