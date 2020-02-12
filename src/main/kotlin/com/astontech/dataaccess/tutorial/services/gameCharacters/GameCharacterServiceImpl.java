@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class GameCharacterServiceImpl implements GameCharacterService {
@@ -29,5 +31,18 @@ public class GameCharacterServiceImpl implements GameCharacterService {
   @Override
   public List<GameCharacterQuery> getCharacterProjectionByVideoGameId(Integer videoGameId) {
     return gameCharacterRepository.getCharacterProjectionByVideoGameId(videoGameId);
+  }
+
+  @Override
+  public List<GameCharacter> getCharactersWithGameInfo() {
+    return gameCharacterRepository.getCharactersWithGameInfo()
+        .stream()
+        .map(GameCharacter::new)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Stream<GameCharacter> getCharactersWithGameInfoStream() {
+    return gameCharacterRepository.getCharactersWithGameInfo().stream().map(GameCharacter::new);
   }
 }

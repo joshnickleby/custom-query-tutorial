@@ -62,6 +62,9 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
     printBreak();
 
     getBrokenApart("Halo: Combat Evolved");
+    printBreak();
+
+    getCharactersWithVideoGameInfo();
   }
 
   public void printBreak() {
@@ -203,5 +206,15 @@ public class TutorialDbInitializer implements ApplicationListener<ContextRefresh
 
     System.out.println(game);
     game.characters.forEach(System.out::println);
+  }
+
+  private void getCharactersWithVideoGameInfo() {
+    List<GameCharacter> characters = gameCharacterService.getCharactersWithGameInfo();
+
+    characters.forEach(character -> System.out.println(character.game.name + ": " + character.toString()));
+
+    System.out.println("\nWith parallel and streams");
+
+    gameCharacterService.getCharactersWithGameInfoStream().parallel().forEach(character -> System.out.println(character.game.name + ": " + character.toString()));
   }
 }

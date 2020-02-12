@@ -19,4 +19,12 @@ public interface GameCharacterRepository extends CrudRepository<GameCharacter, I
 
   @Query(value = "select gc.id, gc.name from game_character gc where gc.video_game_id = ?1", nativeQuery = true)
   List<GameCharacterQuery> getCharacterProjectionByVideoGameId(Integer videoGameId);
+
+  @Query(value = "select " +
+      "gc.id, gc.name, " +
+      "game.name as gameName " +
+      "from game_character gc " +
+      "inner join video_game game on gc.video_game_id = game.id", nativeQuery = true)
+  List<GameCharacterGameInfoQuery> getCharactersWithGameInfo();
+
 }

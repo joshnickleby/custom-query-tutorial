@@ -1,6 +1,7 @@
 package com.astontech.dataaccess.tutorial.services.gameCharacters;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface GameCharacterService {
 
@@ -15,4 +16,8 @@ public interface GameCharacterService {
   Integer updateVideoGameId(Integer characterId, Integer videoGameId);
 
   List<GameCharacterQuery> getCharacterProjectionByVideoGameId(Integer videoGameId);
+
+  List<GameCharacter> getCharactersWithGameInfo();
+
+  Stream<GameCharacter> getCharactersWithGameInfoStream();
 }

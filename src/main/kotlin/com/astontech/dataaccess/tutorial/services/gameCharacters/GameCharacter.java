@@ -1,11 +1,9 @@
 package com.astontech.dataaccess.tutorial.services.gameCharacters;
 
+import com.astontech.dataaccess.tutorial.services.videoGames.VideoGame;
 import com.astontech.dataaccess.tutorial.services.videoGames.VideoGameNestedQuery;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +15,9 @@ public class GameCharacter {
   public String name;
 
   public Integer videoGameId;
+
+  @Transient
+  public VideoGame game;
 
   public GameCharacter() {}
 
@@ -32,6 +33,12 @@ public class GameCharacter {
   public GameCharacter(VideoGameNestedQuery query) {
     this.id = query.getCharacterId();
     this.name = query.getCharacterName();
+  }
+
+  public GameCharacter(GameCharacterGameInfoQuery query) {
+    this((GameCharacterQuery) query);
+
+    this.game = new VideoGame(query.getGameName());
   }
 
   @Override
